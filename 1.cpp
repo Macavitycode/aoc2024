@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 
-int main(){
+int main(int argc, char *argv[]){
     using namespace std;
     ifstream file("1inp.txt");
     int str;
