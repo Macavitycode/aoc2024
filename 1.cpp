@@ -1,10 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <algorithm>
+#include "utils.h"
 
 int main(int argc, char *argv[]){
     using namespace std;
@@ -28,13 +22,6 @@ int main(int argc, char *argv[]){
             break;
         }
     }
-
-    // TODO: IMPORTANT
-    // for(int i=0; i<v1.size(); i++) {
-    //     cout << v1[i] << " " << v2[i] << "\n";
-    // }
-
-    // cout << "\n\nTHIS WORKS\n\n";
     
     sort(v1.begin(), v1.end());
     sort(v2.begin(), v2.end());
