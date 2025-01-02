@@ -38,7 +38,7 @@ int checker(grid theBigG, pair<int, int> tmp, pair<int, int> head, int dir) {
   tmp = head;
   dir = 0;
 
-  while (theBigG.value(tmp) != '1') {
+  while (theBigG.value(tmp) != ' ') {
 
     if (stateSet.contains({tmp, dir})) {
       return 1;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
   int ghostBarriers = 0;
   set<pair<int, int>> setBarriers;
 
-  while (theBigG.value(tmp) != '1') {
+  while (theBigG.value(tmp) != ' ') {
     if (theBigG.value(tmp) == '#') {
       tmp = tmp - diffs[dir];
       dir = (dir + 1) % 4;

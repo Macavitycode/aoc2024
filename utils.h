@@ -1,28 +1,141 @@
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 #include <regex>
 #include <set>
 #include <sstream>
+#include <stdlib.h>
 #include <string>
 #include <typeinfo>
 #include <vector>
 
+using LL = long long;
+
 using namespace std;
 
-void printVec1int(vector<int> v) {
-  /*Func to print 1d vec */
+template <class T> void printVec1T(vector<T> v);
+template <class T> void printVec2T(vector<vector<T>> v);
+
+void printVecString(vector<string> v);
+
+vector<vector<int>> fileToVec2int(string inp, bool toPrint = false);
+
+vector<string> fileToVecString(string inp, bool toPrint = false);
+
+vector<string> regexExtract(string inp, string reg);
+
+vector<string> split(const string s, const string delimiter);
+
+void printMap(map<int, string> m);
+
+class grid {
+private:
+  vector<string> data;
+  int width, height;
+
+public:
+  grid(string inp, bool toPrint = false) {
+    data = fileToVecString(inp, toPrint);
+    width = data[0].size();
+    height = data.size();
+  }
+  grid(vector<string> temp) {
+    data = temp;
+    width = data[0].length();
+    height = data.size();
+  }
+  char value(int i, int j) {
+    if (i < 0 || j < 0 || i >= height || j >= width) {
+      return ' ';
+    }
+    return data[i][j];
+  }
+  char value(pair<int, int> head) { return value(head.first, head.second); }
+  int get_width() { return width; }
+  int get_height() { return height; }
+
+  void print() { printVecString(data); }
+
+  int replaceAt(pair<int, int> tmp, char ch) {
+    /* Replaces char at given pos*/
+    return replaceAt(tmp.first, tmp.second, ch);
+  }
+
+  int replaceAt(int x, int y, char ch) {
+    /* Replaces char at given pos*/
+    if (value(x, y) != '1' && ch != '1') {
+      data[x][y] = ch;
+      return 0;
+    }
+    return -1;
+  }
+
+  vector<pair<int, int>> findAllChars(char ch) {
+    /* Returns all locations of given char in grid*/
+    vector<pair<int, int>> LocList;
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        if (value(i, j) == ch) {
+          LocList.push_back({i, j});
+        }
+      }
+    }
+    return LocList;
+  }
+
+  set<char> findAllUnique(set<char> ignore = {}, bool toPrint = false) {
+    /* Returns a set of all unique chars in data*/
+    set<char> v;
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        char val = value(i, j);
+        if (not ignore.contains(val)) {
+          v.insert(val);
+        }
+      }
+    }
+    if (toPrint) {
+      for (auto a : v) {
+        cout << a << ' ';
+      }
+      cout << endl;
+    }
+    return v;
+  }
+};
+
+pair<int, int> operator+(pair<int, int> a, pair<int, int> b);
+
+pair<int, int> operator-(pair<int, int> a, pair<int, int> b);
+
+pair<int, int> operator-(pair<int, int> a);
+
+string mergeVecString(vector<string> stringInp);
+
+template <class T, class S>
+ostream &operator<<(ostream &os, const pair<T, S> &p);
+
+template <class T> ostream &operator<<(ostream &os, const set<T> &p);
+
+template <class T> ostream &operator<<(ostream &os, const vector<T> &p);
+
+template <class T, class S> ostream &operator<<(ostream &os, const map<T, S> &p);
+
+template <class T> void printVec1T(vector<T> v) {
+  /*Func to prT 1d vec */
   for (int i = 0; i < v.size(); i++)
     cout << v[i] << " ";
   cout << endl;
 }
 
-void printVec2int(vector<vector<int>> v) {
+template <class T> void printVec2T(vector<vector<T>> v) {
   /*Func to print 2d vec */
   for (int i = 0; i < v.size(); i++) {
-    printVec1int(v[i]);
+    printVec1T(v[i]);
   }
 }
 
@@ -32,7 +145,7 @@ void printVecString(vector<string> v) {
     cout << v[i] << endl;
 }
 
-vector<vector<int>> fileToVec2int(string inp, bool toPrint = false) {
+vector<vector<int>> fileToVec2int(string inp, bool toPrint) {
   /*Func to split file to vector of vectors of int*/
 
   using namespace std;
@@ -52,12 +165,12 @@ vector<vector<int>> fileToVec2int(string inp, bool toPrint = false) {
   }
 
   if (toPrint) {
-    printVec2int(lines);
+    printVec2T(lines);
   }
   return lines;
 }
 
-vector<string> fileToVecString(string inp, bool toPrint = false) {
+vector<string> fileToVecString(string inp, bool toPrint) {
   /*Func to split file to vector of vectors of int*/
   using namespace std;
   ifstream file(inp);
@@ -103,47 +216,6 @@ void printMap(map<int, string> m) {
   }
 }
 
-class grid {
-private:
-  vector<string> data;
-  int width, height;
-
-public:
-  grid(string inp, bool toPrint = false) {
-    data = fileToVecString(inp, toPrint);
-    width = data[0].size();
-    height = data.size();
-  }
-  grid(vector<string> temp) {
-    data = temp;
-    width = data[0].length();
-    height = data.size();
-  }
-  char value(int i, int j) {
-    if (i < 0 || j < 0 || i >= height || j >= width) {
-      return '1';
-    }
-    return data[i][j];
-  }
-  char value(pair<int, int> head) { return value(head.first, head.second); }
-  int get_width() { return width; }
-  int get_height() { return height; }
-
-  void print() { printVecString(data); }
-
-  int replaceAt(pair<int, int> tmp, char ch) {
-    return replaceAt(tmp.first, tmp.second, ch);
-  }
-
-  int replaceAt(int x, int y, char ch) {
-    if (value(x, y) != '1' && ch != '1') {
-      data[x][y] = ch;
-      return 0;
-    }
-    return -1;
-  }
-};
-
 pair<int, int> operator+(pair<int, int> a, pair<int, int> b) {
   return {a.first + b.first, a.second + b.second};
 }
@@ -152,6 +224,38 @@ pair<int, int> operator-(pair<int, int> a, pair<int, int> b) {
   return {a.first - b.first, a.second - b.second};
 }
 
-void printPair(pair<int, int> a){
-  cout << a.first << ' ' << a.second;
+pair<int, int> operator-(pair<int, int> a) { return {-a.first, -a.second}; }
+
+string mergeVecString(vector<string> stringInp) {
+  string s;
+  for (auto a : stringInp) {
+    s += a;
+  }
+  return s;
+}
+
+template <class T, class S>
+ostream &operator<<(ostream &os, const pair<T, S> &p) {
+  return os << "{" << p.first << ", " << p.second << "}";
+}
+
+template <class T> ostream &operator<<(ostream &os, const set<T> &p) {
+  for (auto i : p) {
+    os << i << " ";
+  }
+  return os;
+}
+
+template <class T> ostream &operator<<(ostream &os, const vector<T> &p) {
+  for (auto i : p) {
+    os << i << " ";
+  }
+  return os;
+}
+
+template <class T, class S> ostream &operator<<(ostream &os, const map<T, S> &p) {
+  for (auto i : p) {
+    os << i.first << " : " << i.second << endl;
+  }
+  return os;
 }
